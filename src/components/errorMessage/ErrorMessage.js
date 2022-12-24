@@ -10,6 +10,7 @@ const ErrorMessage = () => {
         height: "250px",
         margin: "0 auto",
         objectFit: "contain",
+        display: "block",
       }}
     />
   );

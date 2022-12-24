@@ -2,7 +2,7 @@ import "./skeleton.scss";
 
 const Skeleton = () => {
   return (
-    <div className="skeleton-wrapper">
+    <>
       <p className="char__select">
         Please select a character to see information
       </p>
@@ -15,7 +15,7 @@ const Skeleton = () => {
         <div className="pulse skeleton__block"></div>
         <div className="pulse skeleton__block"></div>
       </div>
-    </div>
+    </>
   );
 };
 

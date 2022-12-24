@@ -27,6 +27,7 @@ class RandomChar extends Component {
   };
 
   updateChar = () => {
+    this.setState({error: false });
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
     this.onCharLoading();
     this.marvelService
@@ -38,12 +39,6 @@ class RandomChar extends Component {
   componentDidMount = () => {
     this.updateChar();
   };
-
-  componentDidUpdate = () => {
-    if (this.state.error === true) {
-      this.setState({error: false });
-    }
-  }
 
   render() {
     const { char, loading, error } = this.state;
@@ -91,10 +86,10 @@ const View = ({ char }) => {
         <p className="randomchar__name">{name}</p>
         <p className="randomchar__descr">{description}</p>
         <div className="randomchar__btns">
-          <a href={homepage} className="button button__main">
+          <a href={homepage} className="button button__main" target='_blanc'>
             <div className="inner">homepage</div>
           </a>
-          <a href={wiki} className="button button__secondary">
+          <a href={wiki} className="button button__secondary" target='_blanc'>
             <div className="inner">Wiki</div>
           </a>
         </div>
