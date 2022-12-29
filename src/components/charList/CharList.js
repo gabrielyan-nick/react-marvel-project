@@ -1,27 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import "./charList.scss";
 
 function CharList(props) {
   const [charList, setCharList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [newItemsLoading, setNewItemsLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [offset, setOffset] = useState(0);
   const [charEnded, setCharEnded] = useState(false);
 
-  const marvelService = new MarvelService();
+  const { loading, error, getAllCharacters } = useMarvelService();
 
   useEffect(() => {
-    onRequest();
+    onRequest(offset, true);
   }, []);
-
-  function onError() {
-    setError(true);
-    setLoading(false);
-  }
 
   function onCharListLoaded(newCharList) {
     let ended = false;
@@ -31,21 +24,13 @@ function CharList(props) {
 
     setCharList((charList) => [...charList, ...newCharList]);
     setOffset((offset) => offset + 12);
-    setLoading(false);
     setNewItemsLoading(false);
     setCharEnded(ended);
   }
 
-  function onCharListLoading() {
-    setNewItemsLoading(true);
-  }
-
-  function onRequest(offset) {
-    onCharListLoading();
-    marvelService
-      .getAllCharacters(12, offset)
-      .then(onCharListLoaded)
-      .catch(onError);
+  function onRequest(offset, init) {
+    init ? setNewItemsLoading(false) : setNewItemsLoading(true);
+    getAllCharacters(12, offset).then(onCharListLoaded);
   }
 
   const itemRefs = useRef([]);
@@ -72,6 +57,7 @@ function CharList(props) {
           tabIndex={0}
           key={item.id}
           onClick={() => {
+            props.onCharSelected(item.id);
             focusOnItem(i);
           }}
           onKeyDown={(e) => {
@@ -81,7 +67,7 @@ function CharList(props) {
               focusOnItem(i);
             }
           }}
-          ref={el => itemRefs.current[i] = el}
+          ref={(el) => (itemRefs.current[i] = el)}
         >
           <img src={item.thumbnail} alt={item.name} style={style} />
           <div className="char__name">{item.name}</div>
@@ -93,16 +79,15 @@ function CharList(props) {
   }
 
   const items = renderItems(charList);
-  const spinner = loading ? <Spinner /> : null;
+  const spinner = loading && !newItemsLoading ? <Spinner /> : null;
   const errorMessage = error ? <ErrorMessage /> : null;
-  const content = !(loading || error) ? items : null;
   const style = { display: charEnded ? "none" : "block" };
 
   return (
     <div className="char__list">
       {spinner}
       {errorMessage}
-      {content}
+      {items}
       <button
         className="button button__main button__long"
         disabled={newItemsLoading}

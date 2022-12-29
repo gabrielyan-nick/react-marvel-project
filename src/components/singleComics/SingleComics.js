@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import "./singleComics.scss";
 import xMen from "../../resources/img/x-men.png";
 
