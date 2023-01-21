@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -42,22 +43,34 @@ const ComicsList = () => {
           : "cover",
       };
       return (
-        <li className="comics__item" key={i}>
-          <Link to={`/comics/${item.id}`}>
-            <img
-              src={item.thumbnail}
-              alt="ultimate war"
-              className="comics__item-img"
-              style={style}
-            />
-            <div className="comics__item-name">{item.title}</div>
-            <div className="comics__item-price">{item.price}</div>
-          </Link>
-        </li>
+        <CSSTransition
+          key={i}
+          timeout={500}
+          classNames="comics__item"
+          mountOnEnter
+          unmountOnExit
+        >
+          <li className="comics__item" key={i}>
+            <Link to={`/comics/${item.id}`}>
+              <img
+                src={item.thumbnail}
+                alt="ultimate war"
+                className="comics__item-img"
+                style={style}
+              />
+              <div className="comics__item-name">{item.title}</div>
+              <div className="comics__item-price">{item.price}</div>
+            </Link>
+          </li>
+        </CSSTransition>
       );
     });
 
-    return <ul className="comics__grid">{items}</ul>;
+    return (
+      <ul className="comics__grid">
+        <TransitionGroup component={null}>{items}</TransitionGroup>
+      </ul>
+    );
   }
 
   const items = renderItems(comicsList);

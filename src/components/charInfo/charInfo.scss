@@ -53,3 +53,18 @@
     }
   }
 }
+
+.char__info-wrapper-enter {
+  opacity: 0;
+}
+.char__info-wrapper-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+.char__info-wrapper-exit {
+  opacity: 1;
+}
+.char__info-wrapper-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}

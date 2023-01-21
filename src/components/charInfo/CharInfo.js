@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CSSTransition } from "react-transition-group";
 import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -7,9 +8,9 @@ import "./charInfo.scss";
 
 function CharInfo(props) {
   const [char, setChar] = useState(null);
-  
+  const [showItem, setShowItem] = useState(false);
 
-  const {loading, error, getCharacter, clearError} = useMarvelService();
+  const { loading, error, getCharacter, clearError } = useMarvelService();
 
   useEffect(() => {
     updateChar();
@@ -17,9 +18,11 @@ function CharInfo(props) {
 
   function onCharLoaded(char) {
     setChar(char);
+    setShowItem(true);
   }
 
   function updateChar() {
+    setShowItem(false);
     clearError();
     const { charId } = props;
     if (!charId) return;
@@ -29,7 +32,9 @@ function CharInfo(props) {
   const skeleton = char || loading || error ? null : <Skeleton />;
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error || !char) ? <View char={char} /> : null;
+  const content = !(loading || error || !char) ? (
+    <View char={char} showItem={showItem} />
+  ) : null;
 
   return (
     <div className="char__info">
@@ -41,8 +46,8 @@ function CharInfo(props) {
   );
 }
 
-const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki, comics } = char;
+const View = (props) => {
+  const { name, description, thumbnail, homepage, wiki, comics } = props.char;
   const style = {
     objectFit: thumbnail.includes("image_not_available") ? "contain" : "cover",
   };
@@ -65,25 +70,41 @@ const View = ({ char }) => {
     );
 
   return (
-    <>
-      <div className="char__basics">
-        <img src={thumbnail} alt={name} style={style} />
-        <div>
-          <div className="char__info-name">{name}</div>
-          <div className="char__btns">
-            <a href={homepage} className="button button__main" target="_blanc">
-              <div className="inner">homepage</div>
-            </a>
-            <a href={wiki} className="button button__secondary" target="_blanc">
-              <div className="inner">Wiki</div>
-            </a>
+    <CSSTransition
+      in={props.showItem}
+      timeout={500}
+      classNames="char__info-wrapper"
+      mountOnEnter
+      unmountOnExit
+    >
+      <div className="char__info-wrapper">
+        <div className="char__basics">
+          <img src={thumbnail} alt={name} style={style} />
+          <div>
+            <div className="char__info-name">{name}</div>
+            <div className="char__btns">
+              <a
+                href={homepage}
+                className="button button__main"
+                target="_blanc"
+              >
+                <div className="inner">homepage</div>
+              </a>
+              <a
+                href={wiki}
+                className="button button__secondary"
+                target="_blanc"
+              >
+                <div className="inner">Wiki</div>
+              </a>
+            </div>
           </div>
         </div>
+        <div className="char__descr">{description}</div>
+        <div className="char__comics">Comics:</div>
+        <ul className="char__comics-list">{comicsList}</ul>
       </div>
-      <div className="char__descr">{description}</div>
-      <div className="char__comics">Comics:</div>
-      <ul className="char__comics-list">{comicsList}</ul>
-    </>
+    </CSSTransition>
   );
 };
 
