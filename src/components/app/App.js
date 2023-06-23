@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Spinner from "../spinner/Spinner";
-import Header from "../header/Header";
+import Header from "../header/Header.js";
 
 
 const ErrorPage = lazy(() => import("../pages/ErrorPage"));
